@@ -47,3 +47,64 @@ SHAPES = {
     'T': [[0, 1, 0], [1, 1, 1]],
     'Z': [[1, 1, 0], [0, 1, 1]]
 }
+
+
+class Block:
+    def __init__(self, x, y, color):
+        self.x = x
+        self.y = y
+        self.color = color
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, (self.x * GRID_SIZE + PLAY_AREA_X,
+                                               self.y * GRID_SIZE + PLAY_AREA_Y,
+                                               GRID_SIZE, GRID_SIZE))
+
+        pygame.draw.rect(surface, CURRENT_COLORS['GRID'], (self.x * GRID_SIZE + PLAY_AREA_X,
+                                                           self.y * GRID_SIZE + PLAY_AREA_Y,
+                                                           GRID_SIZE, GRID_SIZE), 1)
+
+
+def main_menu(screen, selected_colors, selected_background):
+    global CURRENT_COLORS, CURRENT_BACKGROUND
+    menu_font = pygame.font.Font(None, 40)
+
+    menu_items = {
+        "Start Game": (WIDTH // 2, 150),
+        "Background": (WIDTH // 2, 250),
+        "Color Theme": (WIDTH // 2, 350)
+    }
+
+    while True:
+        screen.fill((0, 0, 0))
+
+        for item, pos in menu_items.items():
+            text = menu_font.render(item, True, (255, 255, 255))
+            text_rect = text.get_rect(center=pos)
+
+            screen.blit(text, text_rect)
+
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+
+                for item, pos in menu_items.items():
+                    text = menu_font.render(item, True, (255, 255, 255))
+                    text_rect = text.get_rect(center=pos)
+
+                    if text_rect.collidepoint(mouse_pos):
+                        if item == "Start Game":
+                            return
+                        # elif item == "Background":
+                            # selected_background = background_select_menu(screen, selected_background)
+                        # elif item == "Color Theme":
+                            # selected_colors = color_select_menu(screen, selected_colors)
+
+        CURRENT_COLORS = COLORS_PRESETS[selected_colors]
+        CURRENT_BACKGROUND = BACKGROUNDS[selected_background]
