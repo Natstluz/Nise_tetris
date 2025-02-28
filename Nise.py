@@ -65,6 +65,46 @@ class Block:
                                                            GRID_SIZE, GRID_SIZE), 1)
 
 
+# Класс для представления падающей фигуры тетриса
+class Tetromino:
+    def __init__(self, shape_type):
+        self.shape_type = shape_type
+        self.shape = SHAPES[shape_type]
+        self.color = CURRENT_COLORS[shape_type]
+        self.x = GRID_WIDTH // 2 - len(self.shape[0]) // 2
+        self.y = 0
+        self.rotation = 0
+        self.blocks = self.get_blocks()
+
+    def rotate(self):
+        rotated_shape = list(zip(*reversed(self.shape)))
+
+        if self.x + len(rotated_shape[0]) > GRID_WIDTH:
+            self.x = GRID_WIDTH - len(rotated_shape[0])
+
+        self.shape = [list(row) for row in rotated_shape]
+        self.rotation = (self.rotation + 1) % 4
+        self.blocks = self.get_blocks()
+
+    def get_blocks(self):
+        blocks = []
+        for y, row in enumerate(self.shape):
+            for x, cell in enumerate(row):
+                if cell:
+                    blocks.append(Block(self.x + x, self.y + y, self.color))
+        return blocks
+
+    def move(self, dx, dy):
+        self.x += dx
+        self.y += dy
+        self.blocks = self.get_blocks()
+
+    def draw(self, surface):
+        for block in self.blocks:
+            block.draw(surface)
+
+
+
 def main_menu(screen, selected_colors, selected_background):
     global CURRENT_COLORS, CURRENT_BACKGROUND
     menu_font = pygame.font.Font(None, 40)
